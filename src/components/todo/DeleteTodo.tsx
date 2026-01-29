@@ -1,10 +1,9 @@
 import { IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useContext } from "react";
-import { DataContext } from "../../contexts/DataContext";
+import { useData } from "../../contexts/DataContext";
 
-export default function DeleteTodo({ id }) {
-  let { dispatch } = useContext(DataContext);
+export default function DeleteTodo({ id }: { id: number }) {
+  let { dispatch } = useData();
   return (
     <IconButton
       aria-label="delete"

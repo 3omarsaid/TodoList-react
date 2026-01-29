@@ -1,11 +1,16 @@
 import { useImmerReducer } from "use-immer";
 import { DataContext } from "../contexts/DataContext";
-import { useEffect } from "react";
+import { useEffect, ReactNode } from "react";
 import todosReducer from "../reducer/todosReducer";
 
-export default function DataProvider({ children }) {
+interface DataProviderProps {
+  children: ReactNode;
+}
+
+export default function DataProvider({ children }: DataProviderProps) {
   let [todos, dispatch] = useImmerReducer(todosReducer, null, () => {
-    const oldTodos = JSON.parse(localStorage.getItem("todos"));
+    const todosString = localStorage.getItem("todos");
+    const oldTodos = todosString ? JSON.parse(todosString) : null;
     return oldTodos ? oldTodos : [];
   });
   useEffect(() => {

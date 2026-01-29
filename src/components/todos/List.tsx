@@ -1,12 +1,11 @@
-import { useContext, useMemo } from "react";
+import { useMemo } from "react";
 import ToDo from "../todo/ToDo";
-import { DataContext } from "../../contexts/DataContext";
-import { UiContext } from "../../contexts/UiContext";
+import { useData } from "../../contexts/DataContext";
+import { useUi } from "../../contexts/UiContext";
 import FormEdit from "./FormEdit";
 export default function List() {
-  let { filter } = useContext(UiContext);
-  let { todos } = useContext(DataContext);
-    console.log(todos);
+  let { filter } = useUi();
+  let { todos } = useData();
   let filteredList = useMemo(() => {
     return todos.filter((todo) => {
       if (filter === "finished") return todo.completed;

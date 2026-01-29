@@ -1,12 +1,12 @@
 import { TextField, Button, Card, Container } from "@mui/material";
-import { useContext, useState } from "react";
-import { DataContext } from "../../../contexts/DataContext";
-import { UiContext } from "../../../contexts/UiContext";
+import { useState } from "react";
+import { useData } from "../../../contexts/DataContext";
+import { useUi } from "../../../contexts/UiContext";
 
 export default function AddBar() {
   let [titleInput, setTitleInput] = useState("");
-  let { dispatch } = useContext(DataContext);
-  let { toastActions } = useContext(UiContext);
+  let { dispatch } = useData();
+  let { toastActions } = useUi();
   return (
     <Container maxWidth="sm" disableGutters fixed>
       <Card
@@ -30,7 +30,10 @@ export default function AddBar() {
           value={titleInput}
           onKeyDown={(e) => {
             if (e.key == "Enter") {
-              dispatch({ type: "add", payload: { title: titleInput } });
+              dispatch({
+                type: "add",
+                payload: { id: Date.now(), title: titleInput },
+              });
               setTitleInput("");
               toastActions.showToast();
             }
@@ -44,7 +47,10 @@ export default function AddBar() {
             e.preventDefault();
 
             if (titleInput) {
-              dispatch({ type: "add", payload: { title: titleInput } });
+              dispatch({
+                type: "add",
+                payload: { id: Date.now(), title: titleInput },
+              });
               toastActions.showToast();
               setTitleInput("");
             } else {

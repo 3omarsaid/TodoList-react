@@ -4,10 +4,10 @@ import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import RemoveDoneIcon from "@mui/icons-material/RemoveDone";
 import AllInboxIcon from "@mui/icons-material/AllInbox";
-import { UiContext } from "../../../contexts/UiContext";
+import { useUi } from "../../../contexts/UiContext";
 
 export function Navigation() {
-  let { filter, setFilter } = useContext(UiContext);
+  let { filter, setFilter } = useUi();
 
   return (
     <BottomNavigation

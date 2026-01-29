@@ -4,7 +4,7 @@ import List from "./List";
 import DataProvider from "../../providers/DataProvider";
 import UiProvider from "../../providers/UiProvider";
 import AddBar from "./footer/AddBar";
-import Toast from "./toast";
+import Toast from "./Toast";
 export default function ToDoList() {
   return (
     <>

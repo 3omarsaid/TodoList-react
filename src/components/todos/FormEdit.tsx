@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { FormEvent, useContext } from "react";
 import {
   DialogTitle,
   Button,
@@ -7,20 +7,24 @@ import {
   DialogActions,
   DialogContent,
 } from "@mui/material";
-import { DataContext } from "../../contexts/DataContext";
-import { UiContext } from "../../contexts/UiContext";
+import { useData } from "../../contexts/DataContext";
+import { useUi } from "../../contexts/UiContext";
 
 export default function FormEdit() {
-  let { dispatch } = useContext(DataContext);
-  let { modal, modalActions } = useContext(UiContext);
+  let { dispatch } = useData();
+  let { modal, modalActions } = useUi();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const formJson = Object.fromEntries(formData.entries());
-    const title = formJson.title;
-    dispatch({ type: "edit", payload: { id: modal.todoID, title } });
-    modalActions.handleClose();
+    if(formData.entries()){
+      const formJson = Object.fromEntries(formData.entries());
+      const title = formJson.title;
+      if (typeof title == "string" && modal.todoID) {
+        dispatch({ type: "edit", payload: { id: modal.todoID, title: title } });
+      }
+      modalActions.handleClose();
+    }
   };
 
   return (

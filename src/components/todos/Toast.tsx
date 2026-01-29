@@ -1,11 +1,10 @@
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
-import { UiContext } from "../../contexts/UiContext";
-import { useContext } from "react";
+import { useUi } from "../../contexts/UiContext";
 import { Slide } from "@mui/material";
 
 export default function Toast() {
-  let { toastIsOpen, toastActions } = useContext(UiContext);
+  let { toastIsOpen, toastActions } = useUi();
 
   return (
     <div>

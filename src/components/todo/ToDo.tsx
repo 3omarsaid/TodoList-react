@@ -8,8 +8,8 @@ import {
 import CheckTodo from "./CheckTodo";
 import EditTodo from "./EditTodo";
 import DeleteTodo from "./DeleteTodo";
-
-export default function ToDo({ task }) {
+import { Todo } from "../../types";
+export default function ToDo({ task }: { task: Todo }) {
   return (
     <Card
       sx={{
@@ -23,9 +23,6 @@ export default function ToDo({ task }) {
       <Stack direction="row" justifyContent="space-between">
         <CardContent>
           <Typography variant="h5">{task.title}</Typography>
-          {task.description && (
-            <Typography variant="body1">{task.description}</Typography>
-          )}
         </CardContent>
         <CardActions>
           <CheckTodo id={task.id} completed={task.completed} />
