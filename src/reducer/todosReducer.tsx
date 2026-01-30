@@ -1,8 +1,13 @@
 import { Dispatch } from "react";
 import { Todo } from "../types";
 
-type Type = "add" | "edit" | "toggleComplete" | "delete";
-type payloadReducerProps = { id: number; title?: string };
+type Type = "add" | "edit" | "toggleComplete" | "delete" | "reorder";
+type payloadReducerProps = {
+  id?: number;
+  title?: string;
+  sourceID?: number;
+  destID?: number;
+};
 interface TodoActions {
   type: Type;
   payload: payloadReducerProps;
@@ -16,7 +21,7 @@ export default function todosReducer(
   { type, payload }: TodoActions,
 ): void {
   if (type === "add") {
-    if (payload.title) {
+    if (payload.title && payload.id) {
       let newTodo: Todo = {
         id: payload.id,
         title: payload.title,
@@ -39,5 +44,12 @@ export default function todosReducer(
     if (todoIDX !== -1) {
       todos.splice(todoIDX, 1);
     }
+  } else if (type === "reorder") {
+    let { sourceID, destID } = payload;
+    let sourceIDX = todos.findIndex((t) => t.id === sourceID);
+    let destIDX = todos.findIndex((t) => t.id === destID);
+    if (sourceIDX === -1 && destIDX === -1) return;
+    let [removed] = todos.splice(sourceIDX, 1);
+    todos.splice(destIDX, 0, removed);
   }
 }
