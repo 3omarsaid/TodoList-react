@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 import ToDo from "../todo/ToDo";
-import { useData } from "../../contexts/DataContext";
 import { useUi } from "../../contexts/UiContext";
 import FormEdit from "./FormEdit";
 import {
@@ -9,25 +8,16 @@ import {
   Droppable,
   DropResult,
 } from "@hello-pangea/dnd";
+import { useTodosStore } from "../../stores/todosStore";
 export default function List() {
-  let { filter } = useUi();
-  let { todos, dispatch } = useData();
-  let filteredList = useMemo(() => {
-    return todos.filter((todo) => {
-      if (filter === "finished") return todo.completed;
-      if (filter === "unfinished") return !todo.completed;
-      if (filter === "all") return true;
-    });
-  }, [todos, filter]);
+  let { reorder, getFilteredTodos } = useTodosStore();
+  let filteredList = getFilteredTodos();
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
-    dispatch({
-      type: "reorder",
-      payload: {
-        sourceID: filteredList[result.source.index].id,
-        destID: filteredList[result.destination.index].id,
-      },
-    });
+    reorder(
+      Number(filteredList[result.source.index].id),
+      Number(filteredList[result.destination.index].id),
+    );
   };
   return (
     <DragDropContext onDragEnd={handleDragEnd}>

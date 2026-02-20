@@ -1,15 +1,15 @@
 import { TextField, Button, Card, Container } from "@mui/material";
 import { useState } from "react";
-import { useData } from "../../../contexts/DataContext";
-import { useUi } from "../../../contexts/UiContext";
+import { useTodosStore } from "../../../stores/todosStore";
+import { useUiStore } from "../../../stores/uiStore";
 
 export default function AddBar() {
-  let [titleInput, setTitleInput] = useState("");
-  let { dispatch } = useData();
-  let { toastActions } = useUi();
+  let { showToast } = useUiStore();
+  let { handleClickOpen } = useUiStore();
+
   return (
-    <Container maxWidth="sm" disableGutters fixed>
-      <Card
+    <Container maxWidth="sm" fixed className="relative">
+      {/* <Card
         sx={{
           bgcolor: "AccentColor",
           display: "flex",
@@ -30,37 +30,48 @@ export default function AddBar() {
           value={titleInput}
           onKeyDown={(e) => {
             if (e.key == "Enter") {
-              dispatch({
-                type: "add",
-                payload: { id: Date.now(), title: titleInput },
-              });
+              addTodo(titleInput);
               setTitleInput("");
-              toastActions.showToast();
+              showToast();
             }
           }}
         />
         <Button
-          variant="contained"
+          variant="outlined"
           color="primary"
           size="small"
           onClick={(e) => {
             e.preventDefault();
 
             if (titleInput) {
-              dispatch({
-                type: "add",
-                payload: { id: Date.now(), title: titleInput },
-              });
-              toastActions.showToast();
+              addTodo(titleInput);
+              showToast();
               setTitleInput("");
             } else {
               alert("cann't add todo with empty title");
             }
           }}
         >
-          Add Todo
+          +
         </Button>
-      </Card>
+      </Card> */}
+      <button
+        className="absolute right-5 bottom-5 w-14 h-14 flex justify-center items-center rounded-full 
+  bg-gradient-to-tr from-purple-600 to-blue-500 text-white text-2xl font-light shadow-lg 
+  transition-all duration-300 ease-in-out
+  
+  hover:scale-110 hover:shadow-[0_0_20px_rgba(168,85,247,0.5)] hover:brightness-110
+  
+  active:scale-95
+  
+  focus:outline-none focus:ring-1 focus:ring-purple-500/50"
+        onClick={(e) => {
+          e.preventDefault();
+          handleClickOpen();
+        }}
+      >
+        <span className="mb-1">+</span>
+      </button>
     </Container>
   );
 }

@@ -2,16 +2,17 @@ import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import { useUi } from "../../contexts/UiContext";
 import { Slide } from "@mui/material";
+import { useUiStore } from "../../stores/uiStore";
 
 export default function Toast() {
-  let { toastIsOpen, toastActions } = useUi();
+  let { toast, closeToast } = useUiStore();
 
   return (
     <div>
       <Snackbar
-        open={toastIsOpen}
+        open={toast.isOpen}
         autoHideDuration={6000}
-        onClose={toastActions.closeToast}
+        onClose={closeToast}
         slots={{
           transition: Slide,
         }}
@@ -20,12 +21,12 @@ export default function Toast() {
         }}
       >
         <Alert
-          onClose={toastActions.closeToast}
-          severity="success"
+          onClose={closeToast}
+          severity={toast.message.includes("added") ? "success" : "info"}
           variant="filled"
           sx={{ width: "100%" }}
         >
-          Todo Added
+          {toast.message}
         </Alert>
       </Snackbar>
     </div>

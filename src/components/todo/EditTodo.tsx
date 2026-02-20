@@ -1,8 +1,9 @@
 import { IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import { useUi } from "../../contexts/UiContext";
+import { useUiStore } from "../../stores/uiStore";
 export default function EditTodo({ id }: { id: number }) {
-  let { modalActions } = useUi();
+  let { handleClickOpen } = useUiStore();
+
   return (
     <>
       <IconButton
@@ -11,7 +12,7 @@ export default function EditTodo({ id }: { id: number }) {
           color: "white",
         }}
         onClick={() => {
-          modalActions.handleClickOpen(id);
+          handleClickOpen(id);
         }}
       >
         <EditIcon />

@@ -7,28 +7,31 @@ import {
   DialogActions,
   DialogContent,
 } from "@mui/material";
-import { useData } from "../../contexts/DataContext";
-import { useUi } from "../../contexts/UiContext";
+import { useTodosStore } from "../../stores/todosStore";
+import { useUiStore } from "../../stores/uiStore";
 
 export default function FormEdit() {
-  let { dispatch } = useData();
-  let { modal, modalActions } = useUi();
-
+  let { editTodo, addTodo, getTodoTitle } = useTodosStore();
+  let { modal, handleClose, showToast } = useUiStore();
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    if(formData.entries()){
+    if (formData.entries()) {
       const formJson = Object.fromEntries(formData.entries());
       const title = formJson.title;
-      if (typeof title == "string" && modal.todoID) {
-        dispatch({ type: "edit", payload: { id: modal.todoID, title: title } });
+      if (modal.todoID) {
+        editTodo(modal.todoID, title as string);
+        showToast("todo updated");
+      } else {
+        addTodo(title as string);
+        showToast("todo added");
       }
-      modalActions.handleClose();
+      handleClose();
     }
   };
 
   return (
-    <Dialog open={modal.isOpen} onClose={modalActions.handleClose}>
+    <Dialog open={modal.isOpen} onClose={handleClose}>
       <DialogTitle>Edit Todo Form</DialogTitle>
       <DialogContent>
         <form onSubmit={handleSubmit} id="Edit-form">
@@ -42,11 +45,12 @@ export default function FormEdit() {
             type="text"
             fullWidth
             variant="filled"
+            value={modal.todoID ? getTodoTitle(modal.todoID) : ""}
           />
         </form>
       </DialogContent>
       <DialogActions>
-        <Button onClick={modalActions.handleClose}>Cancel</Button>
+        <Button onClick={handleClose}>Cancel</Button>
         <Button type="submit" form="Edit-form">
           submit
         </Button>

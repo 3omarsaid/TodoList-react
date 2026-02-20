@@ -1,9 +1,9 @@
 import { IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useData } from "../../contexts/DataContext";
+import { useTodosStore } from "../../stores/todosStore";
 
 export default function DeleteTodo({ id }: { id: number }) {
-  let { dispatch } = useData();
+  let { removeTodo } = useTodosStore();
   return (
     <IconButton
       aria-label="delete"
@@ -11,7 +11,7 @@ export default function DeleteTodo({ id }: { id: number }) {
         color: "red",
       }}
       onClick={() => {
-        dispatch({ type: "delete", payload: { id } });
+        removeTodo(id);
       }}
     >
       <DeleteIcon />
