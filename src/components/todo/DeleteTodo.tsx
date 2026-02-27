@@ -2,7 +2,7 @@ import { IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useTodosStore } from "../../stores/todosStore";
 
-export default function DeleteTodo({ id }: { id: number }) {
+export default function DeleteTodo({ id }: { id: string }) {
   let { removeTodo } = useTodosStore();
   return (
     <IconButton

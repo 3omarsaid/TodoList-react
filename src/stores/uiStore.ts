@@ -2,11 +2,11 @@ import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 interface uiState {
-  modal: { isOpen: boolean; todoID: number | null };
+  modal: { isOpen: boolean; todoID: string | null };
   toast: { isOpen: boolean; message: string };
   showToast: (message: string) => void;
-  closeToast: () => void;
-  handleClickOpen: (todoID?: number) => void;
+  closeToast: (event?: React.SyntheticEvent | Event, reason?: string) => void;
+  handleClickOpen: (todoID?: string) => void;
   handleClose: () => void;
 }
 
@@ -16,12 +16,12 @@ export const useUiStore = create<uiState>()(
       immer((set) => ({
         modal: { isOpen: false, todoID: null },
         toast: { isOpen: false, message: "" },
-        showToast: (message: string) => {
+        showToast: (message) => {
           set((state) => {
             state.toast = { isOpen: true, message };
           });
         },
-        closeToast: (event?: React.SyntheticEvent | Event, reason?: string) => {
+        closeToast: (event, reason) => {
           if (reason === "clickaway") {
             return;
           }
@@ -29,7 +29,7 @@ export const useUiStore = create<uiState>()(
             state.toast = { isOpen: false, message: "" };
           });
         },
-        handleClickOpen: (todoID?: number) => {
+        handleClickOpen: (todoID) => {
           if (todoID) {
             set((state) => {
               state.modal.todoID = todoID;

@@ -21,7 +21,10 @@ export default function ToDo({ task }: { task: Todo }) {
           width: "100%",
         }}
       >
-        <CardContent sx={{ minWidth: 0, flex: 1, m: 0, p: 0 }} className="flex items-center">
+        <CardContent
+          sx={{ minWidth: 0, flex: 1, m: 0, p: 0 }}
+          className="flex items-center"
+        >
           <CheckTodo id={task.id} completed={task.completed} />
           <Typography
             variant="h5"
@@ -30,7 +33,7 @@ export default function ToDo({ task }: { task: Todo }) {
               whiteSpace: "normal",
               wordBreak: "break-word",
               overflowWrap: "anywhere",
-              marginLeft:3
+              marginLeft: 3,
             }}
           >
             {task.title}
@@ -47,7 +50,8 @@ export default function ToDo({ task }: { task: Todo }) {
             }}
           >
             <Typography variant="body1" sx={{}}>
-              {new Date(task.id).toLocaleTimeString()}
+              {task.createdAt &&
+                new Date(Number(task.createdAt)).toLocaleTimeString()}
             </Typography>
           </div>
         </CardActions>

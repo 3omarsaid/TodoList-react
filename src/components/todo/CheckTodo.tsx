@@ -3,7 +3,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { useTodosStore } from "../../stores/todosStore";
 interface checkTodoProps {
-  id: number;
+  id: string;
   completed: boolean;
 }
 export default function CheckTodo({ id, completed }:checkTodoProps) {

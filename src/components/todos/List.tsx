@@ -1,6 +1,4 @@
-import { useMemo } from "react";
 import ToDo from "../todo/ToDo";
-import { useUi } from "../../contexts/UiContext";
 import FormEdit from "./FormEdit";
 import {
   DragDropContext,
@@ -15,8 +13,8 @@ export default function List() {
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
     reorder(
-      Number(filteredList[result.source.index].id),
-      Number(filteredList[result.destination.index].id),
+      filteredList[result.source.index].id,
+      filteredList[result.destination.index].id,
     );
   };
   return (
@@ -28,15 +26,15 @@ export default function List() {
             ref={provided.innerRef}
             className="no-scrollbar"
             style={{
+              height: "80%",
               width: "100%",
-              height: "400px",
               overflowY: "auto",
             }}
           >
             {filteredList.map((todo, index) => (
               <Draggable
-                key={todo.id.toString()}
-                draggableId={todo.id.toString()}
+                key={todo.id}
+                draggableId={todo.id}
                 index={index}
               >
                 {(provided) => (
