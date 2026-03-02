@@ -32,14 +32,14 @@ export const useTodosStore = create<todoState>()(
         try {
           const currentTodos = get().todos;
           const order = currentTodos.length;
-          const id = await saveTodoInDB(title, order);
-          if (!id) return;
+          const result = await saveTodoInDB(title, order);
+          if (!result) return;
           set((state) => {
             state.todos.push({
-              id,
+              id: result.id,
               title,
               completed: false,
-              createdAt: Date.now().toString(),
+              createdAt: result.createdAt,
               order,
             });
           });

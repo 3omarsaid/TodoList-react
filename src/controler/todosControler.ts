@@ -34,13 +34,15 @@ export const getTodosFromDB = async (): Promise<Todo[] | []> => {
 export const saveTodoInDB = async (title: string, order: number) => {
   try {
     const docRef = doc(collection(db, "todos"));
-    await setDoc(docRef, {
+    const createdAt = Date.now().toString();
+    // Do not await setDoc to allow immediate UI updates (offline support)
+    setDoc(docRef, {
       title,
       completed: false,
-      createdAt: Date.now().toString(),
+      createdAt,
       order,
-    });
-    return docRef.id;
+    }).catch((err) => console.error("setDoc error:", err));
+    return { id: docRef.id, createdAt };
   } catch (error) {
     console.log(error);
   }
@@ -59,11 +61,12 @@ export const updateTodoInDB = async ({
 }) => {
   try {
     const docRef = doc(db, "todos", id.toString());
-    await updateDoc(docRef, {
+    // Do not await to allow instant optimistic updates offline
+    updateDoc(docRef, {
       ...(title && { title }),
       ...(completed !== undefined && { completed }),
       ...(order !== undefined && { order }),
-    });
+    }).catch((err) => console.error("updateDoc error:", err));
   } catch (error) {
     console.log(error);
   }
@@ -71,7 +74,8 @@ export const updateTodoInDB = async ({
 export const deleteTodoInDB = async (id: string) => {
   try {
     const docRef = doc(db, "todos", id);
-    await deleteDoc(docRef);
+    // Do not await to allow instant optimistic updates offline
+    deleteDoc(docRef).catch((err) => console.error("deleteDoc error:", err));
   } catch (error) {
     console.log(error);
   }
