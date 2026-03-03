@@ -8,12 +8,13 @@ import {
   query,
   orderBy,
 } from "firebase/firestore";
-import { db } from "../utils/firebaseConfig";
+import { db, auth } from "../utils/firebaseConfig";
 import { Todo } from "../types";
-
-export const getTodosFromDB = async (): Promise<Todo[] | []> => {
+const currentUser = auth.currentUser;
+export const getTodosFromDB = async (uid: string): Promise<Todo[] | []> => {
   try {
-    const q = query(collection(db, "todos"), orderBy("order"));
+    if (!uid) return [];
+    const q = query(collection(db, `users/${uid}/todos`), orderBy("order"));
     const todos = await getDocs(q);
     if (todos.empty) return [];
     return todos.docs.map(
@@ -32,10 +33,10 @@ export const getTodosFromDB = async (): Promise<Todo[] | []> => {
 };
 
 export const saveTodoInDB = async (title: string, order: number) => {
+  if (!currentUser?.uid) return;
   try {
-    const docRef = doc(collection(db, "todos"));
+    const docRef = doc(collection(db, `users/${currentUser.uid}/todos`));
     const createdAt = Date.now().toString();
-    // Do not await setDoc to allow immediate UI updates (offline support)
     setDoc(docRef, {
       title,
       completed: false,
@@ -59,9 +60,9 @@ export const updateTodoInDB = async ({
   completed?: boolean;
   order?: number;
 }) => {
+  if (!currentUser?.uid) return;
   try {
-    const docRef = doc(db, "todos", id.toString());
-    // Do not await to allow instant optimistic updates offline
+    const docRef = doc(db, `users/${currentUser?.uid}/todos`, id.toString());
     updateDoc(docRef, {
       ...(title && { title }),
       ...(completed !== undefined && { completed }),
@@ -72,9 +73,9 @@ export const updateTodoInDB = async ({
   }
 };
 export const deleteTodoInDB = async (id: string) => {
+  if (!currentUser?.uid) return;
   try {
-    const docRef = doc(db, "todos", id);
-    // Do not await to allow instant optimistic updates offline
+    const docRef = doc(db, `users/${currentUser?.uid}/todos`, id);
     deleteDoc(docRef).catch((err) => console.error("deleteDoc error:", err));
   } catch (error) {
     console.log(error);

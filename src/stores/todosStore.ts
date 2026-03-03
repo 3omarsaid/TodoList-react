@@ -20,7 +20,7 @@ interface todoState {
   reorder: (sourceID: string, destID: string) => void;
   setFilter: (newValue: string) => void;
   getFilteredTodos: () => Todo[];
-  fetchTodos: () => Promise<void>;
+  fetchTodos: (uid: string) => Promise<void>;
 }
 
 export const useTodosStore = create<todoState>()(
@@ -119,9 +119,9 @@ export const useTodosStore = create<todoState>()(
         if (filter === "unfinished") return todos.filter((t) => !t.completed);
         return todos;
       },
-      fetchTodos: async () => {
+      fetchTodos: async (uid: string) => {
         try {
-          const todos = await getTodosFromDB();
+          const todos = await getTodosFromDB(uid);
           set((state) => {
             state.todos = todos;
           });
