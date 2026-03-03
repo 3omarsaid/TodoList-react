@@ -7,14 +7,18 @@ import {
   DropResult,
 } from "@hello-pangea/dnd";
 import { useTodosStore } from "../../stores/todosStore";
+import { useAuth } from "../../contexts/AuthContext";
 export default function List() {
   let { reorder, getFilteredTodos } = useTodosStore();
+  let auth = useAuth();
   let filteredList = getFilteredTodos();
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
+    if (!auth?.user) return;
     reorder(
       filteredList[result.source.index].id,
       filteredList[result.destination.index].id,
+      auth.user.uid
     );
   };
   return (

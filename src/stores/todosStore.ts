@@ -12,12 +12,12 @@ import { Todo } from "../types";
 interface todoState {
   todos: Todo[];
   filter: string;
-  addTodo: (title: string) => void;
-  editTodo: (id: string, title: string) => void;
-  toggleComblete: (id: string) => void;
-  removeTodo: (id: string) => void;
+  addTodo: (title: string,uid:string) => void;
+  editTodo: (id: string, title: string,uid:string) => void;
+  toggleComblete: (id: string,uid:string) => void;
+  removeTodo: (id: string,uid:string) => void;
   getTodoTitle: (id: string) => string;
-  reorder: (sourceID: string, destID: string) => void;
+  reorder: (sourceID: string, destID: string,uid:string) => void;
   setFilter: (newValue: string) => void;
   getFilteredTodos: () => Todo[];
   fetchTodos: (uid: string) => Promise<void>;
@@ -28,11 +28,11 @@ export const useTodosStore = create<todoState>()(
     immer((set, get) => ({
       todos: [],
       filter: "all",
-      addTodo: async (title) => {
+      addTodo: async (title,uid) => {
         try {
           const currentTodos = get().todos;
           const order = currentTodos.length;
-          const result = await saveTodoInDB(title, order);
+          const result = await saveTodoInDB(title, order,uid);
           if (!result) return;
           set((state) => {
             state.todos.push({
@@ -47,9 +47,9 @@ export const useTodosStore = create<todoState>()(
           console.log(error);
         }
       },
-      editTodo: async (id, title) => {
+      editTodo: async (id, title,uid) => {
         try {
-          await updateTodoInDB({ id: id, title });
+          await updateTodoInDB({ id: id, title,uid });
           set((state) => {
             let seletedTodo = state.todos.find((t) => t.id === id);
             if (seletedTodo) seletedTodo.title = title;
@@ -58,11 +58,12 @@ export const useTodosStore = create<todoState>()(
           console.log(error);
         }
       },
-      toggleComblete: async (id) => {
+      toggleComblete: async (id,uid) => {
         try {
           await updateTodoInDB({
             id: id,
             completed: !get().todos.find((t) => t.id === id)?.completed,
+            uid
           });
           set((state) => {
             let seletedTodo = state.todos.find((t) => t.id === id);
@@ -72,9 +73,9 @@ export const useTodosStore = create<todoState>()(
           console.log(error);
         }
       },
-      removeTodo: async (id) => {
+      removeTodo: async (id,uid) => {
         try {
-          await deleteTodoInDB(id);
+          await deleteTodoInDB(id,uid);
           set((state) => {
             let todoIDX = state.todos.findIndex((t) => t.id === id);
             state.todos.splice(todoIDX, 1);
@@ -92,7 +93,7 @@ export const useTodosStore = create<todoState>()(
         }
         return todoTitle;
       },
-      reorder: (sourceID, destID) => {
+      reorder: (sourceID, destID,uid) => {
         set((state) => {
           let sourceIDX = state.todos.findIndex((t) => t.id === sourceID);
           let destIDX = state.todos.findIndex((t) => t.id === destID);
@@ -104,7 +105,7 @@ export const useTodosStore = create<todoState>()(
           // Update order in state and DB
           state.todos.forEach((todo, index) => {
             todo.order = index;
-            updateTodoInDB({ id: todo.id, order: index });
+            updateTodoInDB({ id: todo.id, order: index,uid });
           });
         });
       },

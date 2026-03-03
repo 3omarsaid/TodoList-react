@@ -9,12 +9,13 @@ import {
 } from "@mui/material";
 import { useTodosStore } from "../../stores/todosStore";
 import { useUiStore } from "../../stores/uiStore";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function FormEdit() {
   let { editTodo, addTodo, getTodoTitle } = useTodosStore();
   let { modal, handleClose, showToast } = useUiStore();
   let [titleInput, setTitleInput] = useState("");
-
+  let auth = useAuth();
   useEffect(() => {
     if (modal.isOpen && modal.todoID) {
       setTitleInput(getTodoTitle(modal.todoID));
@@ -23,10 +24,12 @@ export default function FormEdit() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (modal.todoID) {
-      await editTodo(modal.todoID, titleInput);
+      if (!auth?.user) return;
+      await editTodo(modal.todoID, titleInput, auth?.user?.uid);
       showToast("todo updated");
     } else {
-      await addTodo(titleInput);
+      if (!auth?.user) return;
+      await addTodo(titleInput, auth?.user?.uid);
       showToast("todo added");
     }
     handleClose();

@@ -8,9 +8,8 @@ import {
   query,
   orderBy,
 } from "firebase/firestore";
-import { db, auth } from "../utils/firebaseConfig";
+import { db } from "../utils/firebaseConfig";
 import { Todo } from "../types";
-const currentUser = auth.currentUser;
 export const getTodosFromDB = async (uid: string): Promise<Todo[] | []> => {
   try {
     if (!uid) return [];
@@ -32,10 +31,17 @@ export const getTodosFromDB = async (uid: string): Promise<Todo[] | []> => {
   }
 };
 
-export const saveTodoInDB = async (title: string, order: number) => {
-  if (!currentUser?.uid) return;
+export const saveTodoInDB = async (
+  title: string,
+  order: number,
+  uid: string,
+) => {
+  if (!uid) {
+    console.error("No user logged in");
+    return;
+  }
   try {
-    const docRef = doc(collection(db, `users/${currentUser.uid}/todos`));
+    const docRef = doc(collection(db, `users/${uid}/todos`));
     const createdAt = Date.now().toString();
     setDoc(docRef, {
       title,
@@ -54,15 +60,17 @@ export const updateTodoInDB = async ({
   title,
   completed,
   order,
+  uid,
 }: {
   id: string;
   title?: string;
   completed?: boolean;
   order?: number;
+  uid: string;
 }) => {
-  if (!currentUser?.uid) return;
+  if (!uid) return;
   try {
-    const docRef = doc(db, `users/${currentUser?.uid}/todos`, id.toString());
+    const docRef = doc(db, `users/${uid}/todos`, id.toString());
     updateDoc(docRef, {
       ...(title && { title }),
       ...(completed !== undefined && { completed }),
@@ -72,10 +80,10 @@ export const updateTodoInDB = async ({
     console.log(error);
   }
 };
-export const deleteTodoInDB = async (id: string) => {
-  if (!currentUser?.uid) return;
+export const deleteTodoInDB = async (id: string, uid: string) => {
+  if (!uid) return;
   try {
-    const docRef = doc(db, `users/${currentUser?.uid}/todos`, id);
+    const docRef = doc(db, `users/${uid}/todos`, id);
     deleteDoc(docRef).catch((err) => console.error("deleteDoc error:", err));
   } catch (error) {
     console.log(error);
