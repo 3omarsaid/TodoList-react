@@ -12,7 +12,10 @@ import { db } from "../utils/firebaseConfig";
 import { Todo } from "../types";
 export const getTodosFromDB = async (uid: string): Promise<Todo[] | []> => {
   try {
-    if (!uid) return [];
+    if (!uid) {
+      console.error("No user logged in");
+      return [];
+    }
     const q = query(collection(db, `users/${uid}/todos`), orderBy("order"));
     const todos = await getDocs(q);
     if (todos.empty) return [];
@@ -81,7 +84,10 @@ export const updateTodoInDB = async ({
   }
 };
 export const deleteTodoInDB = async (id: string, uid: string) => {
-  if (!uid) return;
+  if (!uid) {
+    console.error("No user logged in");
+    return;
+  }
   try {
     const docRef = doc(db, `users/${uid}/todos`, id);
     deleteDoc(docRef).catch((err) => console.error("deleteDoc error:", err));
