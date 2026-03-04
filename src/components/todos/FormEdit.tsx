@@ -19,10 +19,22 @@ import { useAuth } from "../../contexts/AuthContext";
 export default function FormEdit() {
   let { editTodo, addTodo, getTodoTitle, todos } = useTodosStore();
   let { categories, getCategoryName } = useCategoriesStore();
-  let { modal, handleClose, showToast, handleCategoryClickOpen } = useUiStore();
+  let {
+    modal,
+    handleClose,
+    showToast,
+    handleCategoryClickOpen,
+    lastCreatedCategoryId,
+  } = useUiStore();
   let [titleInput, setTitleInput] = useState("");
   let [selectedCategory, setSelectedCategory] = useState<string>("");
   let auth = useAuth();
+
+  useEffect(() => {
+    if (lastCreatedCategoryId && modal.isOpen) {
+      setSelectedCategory(lastCreatedCategoryId);
+    }
+  }, [lastCreatedCategoryId]);
   useEffect(() => {
     if (modal.isOpen && modal.todoID) {
       setTitleInput(getTodoTitle(modal.todoID));
@@ -125,6 +137,22 @@ export default function FormEdit() {
                 } else {
                   setSelectedCategory(e.target.value);
                 }
+              }}
+              MenuProps={{
+                PaperProps: {
+                  sx: {
+                    bgcolor: "rgba(255, 255, 255, 0.1)",
+                    backdropFilter: "blur(20px)",
+                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                    color: "white",
+                    "& .MuiMenuItem-root:hover": {
+                      bgcolor: "rgba(255, 255, 255, 0.2)",
+                    },
+                    "& .Mui-selected": {
+                      bgcolor: "rgba(255, 255, 255, 0.3) !important",
+                    },
+                  },
+                },
               }}
             >
               <MenuItem value="">

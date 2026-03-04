@@ -1,5 +1,6 @@
 import ToDo from "../todo/ToDo";
 import FormEdit from "./FormEdit";
+import ProgressBar from "./ProgressBar";
 import {
   DragDropContext,
   Draggable,
@@ -26,6 +27,7 @@ export default function List() {
   };
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
+      <ProgressBar />
       <Droppable droppableId="todos-list">
         {(provided) => (
           <div

@@ -13,7 +13,7 @@ interface categoriesState {
   categories: Category[];
   activeCategoryFilter: string;
   fetchCategories: (uid: string) => Promise<void>;
-  addCategory: (name: string, uid: string) => Promise<void>;
+  addCategory: (name: string, uid: string) => Promise<string | undefined>;
   editCategory: (id: string, name: string, uid: string) => Promise<void>;
   removeCategory: (id: string, uid: string) => Promise<void>;
   setCategoryFilter: (categoryId: string) => void;
@@ -38,12 +38,14 @@ export const useCategoriesStore = create<categoriesState>()(
       addCategory: async (name: string, uid: string) => {
         try {
           const result = await saveCategoryInDB(name, uid);
-          if (!result) return;
+          if (!result) return undefined;
           set((state) => {
             state.categories.push({ id: result.id, name });
           });
+          return result.id;
         } catch (error) {
           console.log(error);
+          return undefined;
         }
       },
       editCategory: async (id: string, name: string, uid: string) => {

@@ -8,6 +8,16 @@ import {
   updateTodoInDB,
 } from "../controler/todosControler";
 import { Todo } from "../types";
+import { useProgressStore } from "./progressStore";
+
+const updateProgress = (todos: Todo[], uid: string) => {
+  const totalTasks = todos.length;
+  const completedTasks = todos.filter((t) => t.completed).length;
+  useProgressStore
+    .getState()
+    .updateDailyProgressLocally(totalTasks, completedTasks);
+  useProgressStore.getState().syncDailyProgressToDB(uid);
+};
 
 interface todoState {
   todos: Todo[];
@@ -49,6 +59,7 @@ export const useTodosStore = create<todoState>()(
               categoryId,
             });
           });
+          updateProgress(get().todos, uid);
         } catch (error) {
           console.log(error);
         }
@@ -65,6 +76,7 @@ export const useTodosStore = create<todoState>()(
               }
             }
           });
+          updateProgress(get().todos, uid);
         } catch (error) {
           console.log(error);
         }
@@ -80,6 +92,7 @@ export const useTodosStore = create<todoState>()(
             let seletedTodo = state.todos.find((t) => t.id === id);
             if (seletedTodo) seletedTodo.completed = !seletedTodo.completed;
           });
+          updateProgress(get().todos, uid);
         } catch (error) {
           console.log(error);
         }
@@ -91,6 +104,7 @@ export const useTodosStore = create<todoState>()(
             let todoIDX = state.todos.findIndex((t) => t.id === id);
             state.todos.splice(todoIDX, 1);
           });
+          updateProgress(get().todos, uid);
         } catch (error) {
           console.log(error);
         }

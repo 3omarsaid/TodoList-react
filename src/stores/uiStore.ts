@@ -10,7 +10,8 @@ interface uiState {
   handleClickOpen: (todoID?: string) => void;
   handleClose: () => void;
   handleCategoryClickOpen: (categoryId?: string) => void;
-  handleCategoryClose: () => void;
+  handleCategoryClose: (newCategoryId?: string) => void;
+  lastCreatedCategoryId: string | null;
 }
 
 export const useUiStore = create<uiState>()(
@@ -19,6 +20,7 @@ export const useUiStore = create<uiState>()(
       immer((set) => ({
         modal: { isOpen: false, todoID: null },
         categoryModal: { isOpen: false, categoryId: null },
+        lastCreatedCategoryId: null,
         toast: { isOpen: false, message: "" },
         showToast: (message) => {
           set((state) => {
@@ -65,10 +67,13 @@ export const useUiStore = create<uiState>()(
             });
           }
         },
-        handleCategoryClose: () => {
+        handleCategoryClose: (newCategoryId) => {
           set((state) => {
             state.categoryModal.categoryId = null;
             state.categoryModal.isOpen = false;
+            if (newCategoryId) {
+              state.lastCreatedCategoryId = newCategoryId;
+            }
           });
         },
       })),

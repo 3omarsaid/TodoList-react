@@ -4,6 +4,7 @@ import Login from "./components/auth/AuthPage";
 import TodoPage from "./components/todos/todosPage";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import AuthPage from "./components/auth/AuthPage";
+import Dashboard from "./components/todos/Dashboard";
 
 function App() {
   return (
@@ -15,6 +16,14 @@ function App() {
         element={
           <ProtectedRoute>
             <TodoPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
           </ProtectedRoute>
         }
       />

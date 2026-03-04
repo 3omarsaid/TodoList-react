@@ -29,14 +29,16 @@ export default function CategoryModal() {
     event.preventDefault();
     if (!auth?.user) return;
 
+    let newCategoryId: string | undefined = undefined;
+
     if (categoryModal.categoryId) {
       await editCategory(categoryModal.categoryId, nameInput, auth.user.uid);
       showToast("Category updated");
     } else {
-      await addCategory(nameInput, auth.user.uid);
+      newCategoryId = await addCategory(nameInput, auth.user.uid);
       showToast("Category added");
     }
-    handleCategoryClose();
+    handleCategoryClose(newCategoryId);
     setNameInput("");
   };
 
@@ -88,7 +90,7 @@ export default function CategoryModal() {
       </DialogContent>
       <DialogActions>
         <Button
-          onClick={handleCategoryClose}
+          onClick={() => handleCategoryClose()}
           sx={{ color: "rgba(255,255,255,0.7)" }}
         >
           Cancel
