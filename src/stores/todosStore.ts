@@ -12,14 +12,19 @@ import { Todo } from "../types";
 interface todoState {
   todos: Todo[];
   filter: string;
-  addTodo: (title: string,uid:string) => void;
-  editTodo: (id: string, title: string,uid:string) => void;
-  toggleComblete: (id: string,uid:string) => void;
-  removeTodo: (id: string,uid:string) => void;
+  addTodo: (title: string, uid: string, categoryId?: string) => void;
+  editTodo: (
+    id: string,
+    title: string,
+    uid: string,
+    categoryId?: string,
+  ) => void;
+  toggleComblete: (id: string, uid: string) => void;
+  removeTodo: (id: string, uid: string) => void;
   getTodoTitle: (id: string) => string;
-  reorder: (sourceID: string, destID: string,uid:string) => void;
+  reorder: (sourceID: string, destID: string, uid: string) => void;
   setFilter: (newValue: string) => void;
-  getFilteredTodos: () => Todo[];
+  getFilteredTodos: (activeCategoryFilter?: string) => Todo[];
   fetchTodos: (uid: string) => Promise<void>;
 }
 
@@ -28,11 +33,11 @@ export const useTodosStore = create<todoState>()(
     immer((set, get) => ({
       todos: [],
       filter: "all",
-      addTodo: async (title,uid) => {
+      addTodo: async (title, uid, categoryId) => {
         try {
           const currentTodos = get().todos;
           const order = currentTodos.length;
-          const result = await saveTodoInDB(title, order,uid);
+          const result = await saveTodoInDB(title, order, uid, categoryId);
           if (!result) return;
           set((state) => {
             state.todos.push({
@@ -41,29 +46,35 @@ export const useTodosStore = create<todoState>()(
               completed: false,
               createdAt: result.createdAt,
               order,
+              categoryId,
             });
           });
         } catch (error) {
           console.log(error);
         }
       },
-      editTodo: async (id, title,uid) => {
+      editTodo: async (id, title, uid, categoryId) => {
         try {
-          await updateTodoInDB({ id: id, title,uid });
+          await updateTodoInDB({ id: id, title, uid, categoryId });
           set((state) => {
             let seletedTodo = state.todos.find((t) => t.id === id);
-            if (seletedTodo) seletedTodo.title = title;
+            if (seletedTodo) {
+              seletedTodo.title = title;
+              if (categoryId !== undefined) {
+                seletedTodo.categoryId = categoryId;
+              }
+            }
           });
         } catch (error) {
           console.log(error);
         }
       },
-      toggleComblete: async (id,uid) => {
+      toggleComblete: async (id, uid) => {
         try {
           await updateTodoInDB({
             id: id,
             completed: !get().todos.find((t) => t.id === id)?.completed,
-            uid
+            uid,
           });
           set((state) => {
             let seletedTodo = state.todos.find((t) => t.id === id);
@@ -73,9 +84,9 @@ export const useTodosStore = create<todoState>()(
           console.log(error);
         }
       },
-      removeTodo: async (id,uid) => {
+      removeTodo: async (id, uid) => {
         try {
-          await deleteTodoInDB(id,uid);
+          await deleteTodoInDB(id, uid);
           set((state) => {
             let todoIDX = state.todos.findIndex((t) => t.id === id);
             state.todos.splice(todoIDX, 1);
@@ -93,7 +104,7 @@ export const useTodosStore = create<todoState>()(
         }
         return todoTitle;
       },
-      reorder: (sourceID, destID,uid) => {
+      reorder: (sourceID, destID, uid) => {
         set((state) => {
           let sourceIDX = state.todos.findIndex((t) => t.id === sourceID);
           let destIDX = state.todos.findIndex((t) => t.id === destID);
@@ -105,7 +116,7 @@ export const useTodosStore = create<todoState>()(
           // Update order in state and DB
           state.todos.forEach((todo, index) => {
             todo.order = index;
-            updateTodoInDB({ id: todo.id, order: index,uid });
+            updateTodoInDB({ id: todo.id, order: index, uid });
           });
         });
       },
@@ -114,11 +125,25 @@ export const useTodosStore = create<todoState>()(
           state.filter = newValue;
         });
       },
-      getFilteredTodos: () => {
+      getFilteredTodos: (activeCategoryFilter) => {
         const { todos, filter } = get();
-        if (filter === "finished") return todos.filter((t) => t.completed);
-        if (filter === "unfinished") return todos.filter((t) => !t.completed);
-        return todos;
+
+        let filteredTodos = todos;
+
+        // Filter by category
+        if (activeCategoryFilter && activeCategoryFilter !== "all") {
+          filteredTodos = filteredTodos.filter(
+            (t) => t.categoryId === activeCategoryFilter,
+          );
+        }
+
+        // Filter by completion status
+        if (filter === "finished")
+          return filteredTodos.filter((t) => t.completed);
+        if (filter === "unfinished")
+          return filteredTodos.filter((t) => !t.completed);
+
+        return filteredTodos;
       },
       fetchTodos: async (uid: string) => {
         try {

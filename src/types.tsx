@@ -4,4 +4,10 @@ export interface Todo {
   completed: boolean;
   createdAt?: string;
   order: number;
+  categoryId?: string;
+}
+
+export interface Category {
+  id: string;
+  name: string;
 }

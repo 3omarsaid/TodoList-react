@@ -7,18 +7,21 @@ import {
   DropResult,
 } from "@hello-pangea/dnd";
 import { useTodosStore } from "../../stores/todosStore";
+import { useCategoriesStore } from "../../stores/categoriesStore";
 import { useAuth } from "../../contexts/AuthContext";
+
 export default function List() {
   let { reorder, getFilteredTodos } = useTodosStore();
+  let { activeCategoryFilter } = useCategoriesStore();
   let auth = useAuth();
-  let filteredList = getFilteredTodos();
+  let filteredList = getFilteredTodos(activeCategoryFilter);
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
     if (!auth?.user) return;
     reorder(
       filteredList[result.source.index].id,
       filteredList[result.destination.index].id,
-      auth.user.uid
+      auth.user.uid,
     );
   };
   return (
@@ -36,11 +39,7 @@ export default function List() {
             }}
           >
             {filteredList.map((todo, index) => (
-              <Draggable
-                key={todo.id}
-                draggableId={todo.id}
-                index={index}
-              >
+              <Draggable key={todo.id} draggableId={todo.id} index={index}>
                 {(provided) => (
                   <div
                     ref={provided.innerRef}

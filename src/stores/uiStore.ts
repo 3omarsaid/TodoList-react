@@ -3,11 +3,14 @@ import { devtools, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 interface uiState {
   modal: { isOpen: boolean; todoID: string | null };
+  categoryModal: { isOpen: boolean; categoryId: string | null };
   toast: { isOpen: boolean; message: string };
   showToast: (message: string) => void;
   closeToast: (event?: React.SyntheticEvent | Event, reason?: string) => void;
   handleClickOpen: (todoID?: string) => void;
   handleClose: () => void;
+  handleCategoryClickOpen: (categoryId?: string) => void;
+  handleCategoryClose: () => void;
 }
 
 export const useUiStore = create<uiState>()(
@@ -15,6 +18,7 @@ export const useUiStore = create<uiState>()(
     persist(
       immer((set) => ({
         modal: { isOpen: false, todoID: null },
+        categoryModal: { isOpen: false, categoryId: null },
         toast: { isOpen: false, message: "" },
         showToast: (message) => {
           set((state) => {
@@ -46,6 +50,25 @@ export const useUiStore = create<uiState>()(
           set((state) => {
             state.modal.todoID = null;
             state.modal.isOpen = false;
+          });
+        },
+        handleCategoryClickOpen: (categoryId) => {
+          if (categoryId) {
+            set((state) => {
+              state.categoryModal.categoryId = categoryId;
+              state.categoryModal.isOpen = true;
+            });
+          } else {
+            set((state) => {
+              state.categoryModal.categoryId = null;
+              state.categoryModal.isOpen = true;
+            });
+          }
+        },
+        handleCategoryClose: () => {
+          set((state) => {
+            state.categoryModal.categoryId = null;
+            state.categoryModal.isOpen = false;
           });
         },
       })),

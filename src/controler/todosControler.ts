@@ -26,6 +26,7 @@ export const getTodosFromDB = async (uid: string): Promise<Todo[] | []> => {
         completed: doc.data().completed,
         createdAt: doc.data().createdAt,
         order: doc.data().order,
+        categoryId: doc.data().categoryId,
       }),
     );
   } catch (error) {
@@ -38,6 +39,7 @@ export const saveTodoInDB = async (
   title: string,
   order: number,
   uid: string,
+  categoryId?: string,
 ) => {
   if (!uid) {
     console.error("No user logged in");
@@ -51,6 +53,7 @@ export const saveTodoInDB = async (
       completed: false,
       createdAt,
       order,
+      ...(categoryId && { categoryId }),
     }).catch((err) => console.error("setDoc error:", err));
     return { id: docRef.id, createdAt };
   } catch (error) {
@@ -64,12 +67,14 @@ export const updateTodoInDB = async ({
   completed,
   order,
   uid,
+  categoryId,
 }: {
   id: string;
   title?: string;
   completed?: boolean;
   order?: number;
   uid: string;
+  categoryId?: string | null;
 }) => {
   if (!uid) return;
   try {
@@ -78,6 +83,9 @@ export const updateTodoInDB = async ({
       ...(title && { title }),
       ...(completed !== undefined && { completed }),
       ...(order !== undefined && { order }),
+      ...(categoryId !== undefined && {
+        categoryId: categoryId === null ? "" : categoryId,
+      }),
     }).catch((err) => console.error("updateDoc error:", err));
   } catch (error) {
     console.log(error);
