@@ -35,7 +35,7 @@ export default function List() {
             ref={provided.innerRef}
             className="no-scrollbar"
             style={{
-              height: "80%",
+              height: "60%",
               width: "100%",
               overflowY: "auto",
             }}

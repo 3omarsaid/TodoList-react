@@ -5,6 +5,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useCategoriesStore } from "../../../stores/categoriesStore";
 import { useUiStore } from "../../../stores/uiStore";
 import { useAuth } from "../../../contexts/AuthContext";
+import TaskBar from "./TaskBar";
 
 export default function Header() {
   const {
@@ -29,9 +30,7 @@ export default function Header() {
           mb: 2,
         }}
       >
-        <Typography variant="h3" style={{ zIndex: 2 }}>
-          Daily todos
-        </Typography>
+        <TaskBar />
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <Select
             value={activeCategoryFilter}
